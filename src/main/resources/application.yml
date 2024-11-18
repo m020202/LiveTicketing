@@ -19,3 +19,13 @@ spring:
 logging:
   level:
     org.springframework.cache: trace # Redis 사용에 대한 로그가 조회되도록 설정
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://mydb.cv4os6qs68fx.ap-northeast-2.rds.amazonaws.com:3306/mydb
+    username: root
+    password: password
