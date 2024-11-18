@@ -3,9 +3,9 @@ spring:
   profiles:
     default: local
   datasource:
-    url: jdbc:mysql://mydb.cv4os6qs68fx.ap-northeast-2.rds.amazonaws.com:3306/mydb
+    url: jdbc:mysql://localhost:3306/study
     username: root
-    password: password
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -21,12 +21,12 @@ logging:
     org.springframework.cache: trace # Redis 사용에 대한 로그가 조회되도록 설정
 
 ---
-## prod 환경
-#spring:
-#  config:
-#    activate:
-#      on-profile: prod # 실제 운영 중인 환경이라는 의미
-#  datasource:
-#    url: jdbc:mysql://mydb.cv4os6qs68fx.ap-northeast-2.rds.amazonaws.com:3306/mydb
-#    username: root
-#    password: password
+# prod 환경
+spring:
+  config:
+    activate:
+      on-profile: prod # 실제 운영 중인 환경이라는 의미
+  datasource:
+    url: jdbc:mysql://mydb.cv4os6qs68fx.ap-northeast-2.rds.amazonaws.com:3306/mydb
+    username: root
+    password: password
