@@ -1,4 +1,4 @@
-package redisX.config.redis;
+package redisX.global.config;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
