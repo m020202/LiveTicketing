@@ -1,22 +1,22 @@
-package redisX.ticket.service;
+package redisX.no_lock.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import redisX.ticket.domain.Member;
-import redisX.ticket.repository.MemberRepository;
+import redisX.no_lock.domain.MemberV1;
+import redisX.no_lock.repository.MemberRepositoryV1;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
-    private final MemberRepository memberRepository;
+public class MemberServiceV1 {
+    private final MemberRepositoryV1 memberRepository;
     @Transactional
     public Long join(String name) {
-        Member member = Member.builder().name(name).build();
+        MemberV1 member = MemberV1.builder().name(name).build();
         return memberRepository.save(member).getId();
     }
 
-    public Member findById(Long id) {
+    public MemberV1 findById(Long id) {
         return memberRepository.findById(id).orElseThrow();
     }
 }
