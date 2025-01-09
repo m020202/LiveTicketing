@@ -22,8 +22,8 @@ public class Ticket {
     @OneToMany(mappedBy = "ticket")
     private List<Member> memberList;
 
-//    @Version // 낙관적 락을 위한 버전 필드 추가
-//    private Long version;
+    @Version // 낙관적 락을 위한 버전 필드 추가
+    private Long version;
 
     public void decrease() {
         this.quantity -= 1;

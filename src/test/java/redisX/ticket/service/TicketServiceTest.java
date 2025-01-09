@@ -67,7 +67,7 @@ class TicketServiceTest {
 			Long memberId = memberService.join("J");
 			boolean result = ticketService.ticketing(ticketId);
 			if (result) {
-				System.out.println(memberId);
+				System.out.println("티켓 구매에 성공했습니다 !");
 				ticketService.addMember(ticketId, memberId);
 			}
 			else {
@@ -90,7 +90,7 @@ class TicketServiceTest {
 		CountDownLatch countDownLatch = new CountDownLatch(TOTAL_USERS); // 20명 대기
 
 		// when
-		List<TicketPurchaseWorkerV2> workers = Stream.generate(() -> new TicketPurchaseWorkerV2(ticketService, TICKET_ID, countDownLatch))
+		List<TicketPurchaseWorkerV2> workers = Stream.generate(() -> new TicketPurchaseWorkerV2(memberService, ticketService, TICKET_ID, countDownLatch))
 				.limit(TOTAL_USERS)
 				.collect(Collectors.toList());
 
@@ -103,11 +103,13 @@ class TicketServiceTest {
 	}
 
 	private class TicketPurchaseWorkerV2 implements Runnable {
+		private final MemberService memberService;
 		private final TicketService ticketService;
 		private final Long ticketId;
 		private final CountDownLatch countDownLatch;
 
-		public TicketPurchaseWorkerV2(TicketService ticketService, Long ticketId, CountDownLatch countDownLatch) {
+		public TicketPurchaseWorkerV2(MemberService memberService, TicketService ticketService, Long ticketId, CountDownLatch countDownLatch) {
+			this.memberService = memberService;
 			this.ticketService = ticketService;
 			this.ticketId = ticketId;
 			this.countDownLatch = countDownLatch;
@@ -115,18 +117,22 @@ class TicketServiceTest {
 
 		@Override
 		public void run() {
-			try {
-				boolean result = ticketService.ticketingByOptimisticLock(ticketId);
-				if (result) {
-					System.out.println("구매 성공!");
-				} else {
+			Long memberId = memberService.join("J");
+			while (true) {
+				try {
+					boolean result = ticketService.ticketingByOptimisticLock(ticketId);
+					if (result) {
+						System.out.println("구매 성공!");
+						ticketService.addMember(ticketId, memberId);
+					} else {
+						System.out.println("구매 실패!");
+					}
+					break;
+				} catch (ObjectOptimisticLockingFailureException e) {
 					System.out.println("구매 실패!");
 				}
-			} catch (ObjectOptimisticLockingFailureException e) {
-				System.out.println("구매 실패!");
-			} finally {
-				countDownLatch.countDown();
 			}
+			countDownLatch.countDown();
 		}
 	}
 }
