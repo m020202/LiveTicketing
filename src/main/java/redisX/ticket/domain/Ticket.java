@@ -1,9 +1,6 @@
 package redisX.ticket.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +16,8 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long quantity;
+    @Version // 낙관적 락을 위한 버전 필드 추가
+    private Long version;
 
     public void decrease() {
         this.quantity -= 1;
