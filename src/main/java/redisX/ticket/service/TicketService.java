@@ -1,14 +1,10 @@
 package redisX.ticket.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.dialect.lock.OptimisticEntityLockException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import redisX.ticket.domain.Member;
 import redisX.ticket.domain.Ticket;
 import redisX.ticket.repository.TicketRepository;
 
@@ -16,14 +12,13 @@ import redisX.ticket.repository.TicketRepository;
 @RequiredArgsConstructor
 public class TicketService {
     private final TicketRepository ticketRepository;
-    private final EntityManager entityManager;
+    private final MemberService memberService;
 
     @Transactional
     public Long create(Long quantity) {
         Ticket ticket = Ticket.builder().quantity(10L).build();
         ticketRepository.save(ticket);
         return ticket.getId();
-
     }
 
     @Transactional
@@ -49,5 +44,13 @@ public class TicketService {
 
     public Ticket findById(Long id) {
         return ticketRepository.findById(id).orElseThrow();
+    }
+
+    @Transactional
+    public void addMember(Long id, Long memberId) {
+        Member member = memberService.findById(memberId);
+        Ticket ticket = findById(id);
+        ticket.addMember(member);
+        ticketRepository.save(ticket);
     }
 }

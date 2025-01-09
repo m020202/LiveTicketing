@@ -20,6 +20,8 @@ class TicketServiceTest {
 
     @Autowired
 	private TicketService ticketService;
+	@Autowired
+	private MemberService memberService;
     @Test
     void contextLoads() {
     }
@@ -35,7 +37,7 @@ class TicketServiceTest {
 		CountDownLatch countDownLatch = new CountDownLatch(TOTAL_USERS); // 20명 대기
 
 		// when
-		List<TicketPurchaseWorker> workers = Stream.generate(() -> new TicketPurchaseWorker(ticketService, TICKET_ID, countDownLatch))
+		List<TicketPurchaseWorker> workers = Stream.generate(() -> new TicketPurchaseWorker(memberService, ticketService, TICKET_ID,countDownLatch))
 				.limit(TOTAL_USERS)
 				.collect(Collectors.toList());
 
@@ -48,11 +50,13 @@ class TicketServiceTest {
 	}
 
 	private class TicketPurchaseWorker implements Runnable {
+		private final MemberService memberService;
 		private final TicketService ticketService;
 		private final Long ticketId;
 		private final CountDownLatch countDownLatch;
 
-		public TicketPurchaseWorker(TicketService ticketService, Long ticketId, CountDownLatch countDownLatch) {
+		public TicketPurchaseWorker(MemberService memberService, TicketService ticketService, Long ticketId, CountDownLatch countDownLatch) {
+			this.memberService = memberService;
 			this.ticketService = ticketService;
 			this.ticketId = ticketId;
 			this.countDownLatch = countDownLatch;
@@ -60,9 +64,11 @@ class TicketServiceTest {
 
 		@Override
 		public void run() {
+			Long memberId = memberService.join("J");
 			boolean result = ticketService.ticketing(ticketId);
 			if (result) {
-				System.out.println("티켓 구매에 성공했습니다 !");
+				System.out.println(memberId);
+				ticketService.addMember(ticketId, memberId);
 			}
 			else {
 				System.out.println("티켓 구매에 실패했습니다 !");

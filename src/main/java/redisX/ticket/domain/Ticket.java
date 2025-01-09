@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -16,10 +19,18 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long quantity;
-    @Version // 낙관적 락을 위한 버전 필드 추가
-    private Long version;
+    @OneToMany(mappedBy = "ticket")
+    private List<Member> memberList;
+
+//    @Version // 낙관적 락을 위한 버전 필드 추가
+//    private Long version;
 
     public void decrease() {
         this.quantity -= 1;
+    }
+
+    public void addMember(Member member) {
+        memberList.add(member);
+        member.setTicket(this);
     }
 }
