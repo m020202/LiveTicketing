@@ -1,4 +1,4 @@
-package redisX.distributed_lock.config;
+package redisX.distributed_lock.by_Lettuce.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

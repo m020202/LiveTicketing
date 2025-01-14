@@ -1,12 +1,12 @@
-package redisX.distributed_lock.service;
+package redisX.distributed_lock.by_Lettuce.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import redisX.distributed_lock.domain.MemberV4;
-import redisX.distributed_lock.domain.TicketV4;
-import redisX.distributed_lock.repository.TicketRepositoryV4;
+import redisX.distributed_lock.by_Lettuce.domain.MemberV4;
+import redisX.distributed_lock.by_Lettuce.domain.TicketV4;
+import redisX.distributed_lock.by_Lettuce.repository.TicketRepositoryV4;
 
 import java.util.concurrent.TimeUnit;
 

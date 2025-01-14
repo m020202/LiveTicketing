@@ -1,10 +1,10 @@
-package redisX.distributed_lock.service;
+package redisX.distributed_lock.by_Redisson.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import redisX.distributed_lock.domain.TicketV4;
+import redisX.distributed_lock.by_Redisson.domain.TicketV5;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -15,17 +15,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class TicketServiceV4Test {
+class TicketServiceV5Test {
     @Autowired
-    private TicketServiceV4 ticketService;
+    private TicketServiceV5 ticketService;
     @Autowired
-    private MemberServiceV4 memberService;
+    private MemberServiceV5 memberService;
     @Test
     void contextLoads() {
     }
 
     @Test
-    @DisplayName("스핀락을 활용하여 테스트")
+    @DisplayName("Redisson 분산락을 활용하여 테스트")
     void ticketingTest() throws InterruptedException {
         // given
         final Long TOTAL_TICKETS = 10L; // 총 10개의 티켓
@@ -35,7 +35,7 @@ class TicketServiceV4Test {
         CountDownLatch countDownLatch = new CountDownLatch(TOTAL_USERS); // 20명 대기
 
         // when
-        List<TicketServiceV4Test.TicketPurchaseWorker> workers = Stream.generate(() -> new TicketServiceV4Test.TicketPurchaseWorker(memberService, ticketService, TICKET_ID,countDownLatch))
+        List<TicketPurchaseWorker> workers = Stream.generate(() -> new TicketPurchaseWorker(memberService, ticketService, TICKET_ID,countDownLatch))
                 .limit(TOTAL_USERS)
                 .collect(Collectors.toList());
 
@@ -43,17 +43,17 @@ class TicketServiceV4Test {
         countDownLatch.await(); // 모든 작업이 완료될 때까지 대기
 
         // then
-        TicketV4 updateTicket = ticketService.findById(TICKET_ID);
+        TicketV5 updateTicket = ticketService.findById(TICKET_ID);
         assertThat(updateTicket.getQuantity()).isEqualTo(0);
     }
 
     private class TicketPurchaseWorker implements Runnable {
-        private final MemberServiceV4 memberService;
-        private final TicketServiceV4 ticketService;
+        private final MemberServiceV5 memberService;
+        private final TicketServiceV5 ticketService;
         private final Long ticketId;
         private final CountDownLatch countDownLatch;
 
-        public TicketPurchaseWorker(MemberServiceV4 memberService, TicketServiceV4 ticketService, Long ticketId, CountDownLatch countDownLatch) {
+        public TicketPurchaseWorker(MemberServiceV5 memberService, TicketServiceV5 ticketService, Long ticketId, CountDownLatch countDownLatch) {
             this.memberService = memberService;
             this.ticketService = ticketService;
             this.ticketId = ticketId;
@@ -65,7 +65,7 @@ class TicketServiceV4Test {
             Long memberId = memberService.join("J");
             boolean result = false;
             try {
-                result = ticketService.ticketingBySpinLock("key", ticketId);
+                result = ticketService.ticketingByDistributedLock(ticketId);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -76,7 +76,6 @@ class TicketServiceV4Test {
             else {
                 System.out.println("티켓 구매에 실패했습니다 !");
             }
-
             countDownLatch.countDown();
         }
     }

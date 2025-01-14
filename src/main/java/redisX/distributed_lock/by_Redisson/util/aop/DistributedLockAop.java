@@ -28,7 +28,7 @@ public class DistributedLockAop {
         DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
 
         // 해당 key 에 대한 Lock 획득 시도
-        String key = REDISSON_LOCK_PREFIX;
+        String key = distributedLock.key();
         RLock rLock = redissonClient.getLock(key);
 
         try {

@@ -1,4 +1,4 @@
-package redisX.distributed_lock.domain;
+package redisX.distributed_lock.by_Lettuce.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
