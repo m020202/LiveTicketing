@@ -1,4 +1,4 @@
-package redisX.global.config;
+package redisX.distributed_lock.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,14 +10,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-public class RedisConfig {
+public class RedisConfigV1 {
     @Value("${spring.data.redis.host}")
     private String host;
 
     @Value("${spring.data.redis.port}")
     private int port;
 
-    @Bean
+    @Bean // Lettuce 클라이언트 활용
     public LettuceConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(new RedisStandaloneConfiguration(host, port));
     }
