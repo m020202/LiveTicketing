@@ -9,7 +9,7 @@
 3. **비관적 락 (Pessimistic Lock)을 사용하는 방식.**
 
 4. **분산 락 (Distributed Lock)을 사용하는 방식.**
-   (Redis의 Lettuce, Redisson 클라이언트 활용)
+(Redis의 Lettuce, Redisson 클라이언트 활용)
 
 **🔑 노션 정리**
 
